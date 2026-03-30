@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Profile, Video, Job, Comment
+from .models import User, Profile, Video, Job, TalentListing
 
-# Özel User modelimizi admin panelinde düzgün görmek için
+# Custom User modelini admin panelinde düzgün görmek için
 class CustomUserAdmin(UserAdmin):
     model = User
     list_display = ['username', 'email', 'role', 'is_staff']
@@ -13,9 +13,8 @@ class CustomUserAdmin(UserAdmin):
         (None, {'fields': ('role',)}),
     )
 
-# Tabloları tek tek kaydediyoruz
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Profile)
 admin.site.register(Video)
 admin.site.register(Job)
-admin.site.register(Comment)
+admin.site.register(TalentListing)

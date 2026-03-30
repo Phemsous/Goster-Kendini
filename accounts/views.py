@@ -1,23 +1,22 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-from .forms import RegisterForm, JobForm, TalentListingForm # TalentListingForm eklendi
-from .models import Video, Job, TalentListing # TalentListing eklendi
 from django.contrib.auth.forms import AuthenticationForm
-from django.db.models import Q
 from django.contrib import messages
 
+from .forms import RegisterForm, JobForm, TalentListingForm
+from .services import create_user_service, create_job_service, create_talent_ad_service
+from .selectors import get_active_jobs, get_active_talents, get_latest_videos
+
 def home(request):
-    videos = Video.objects.all().order_by('-created_at')[:6]
+    videos = get_latest_videos(limit=6)
     return render(request, 'home.html', {'videos': videos})
 
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form.cleaned_data['password'])
-            user.save()
+            user = create_user_service(**form.cleaned_data)
             login(request, user)
             return redirect('home')
     else:
@@ -42,59 +41,49 @@ def user_logout(request):
     logout(request)
     return redirect('home')
 
-# --- GÜNCELLENMİŞ İŞ İLANI FONKSİYONU (AYNEN KORUNDU) ---
-
 @login_required
 def create_job(request):
-    user_role = str(request.user.role).strip().lower()
-    
-    if user_role != 'producer':
-        messages.error(request, f"Hata: Rolünüz '{user_role}' olarak görünüyor. İlan vermek için 'producer' olmalısınız.")
+    # KAPIDAN ÇEVİRME: Sayfaya girişi en baştan engeller
+    if str(request.user.role).lower() != 'producer':
+        messages.error(request, "İş ilanı sayfasına girmek için 'Yapımcı / Casting' olmalısınız.")
         return redirect('home')
-    
+
     if request.method == 'POST':
         form = JobForm(request.POST)
         if form.is_valid():
-            job = form.save(commit=False)
-            job.producer = request.user
-            job.save()
-            messages.success(request, "İlan başarıyla yayınlandı!")
-            return redirect('job_list')
+            try:
+                create_job_service(request.user, **form.cleaned_data)
+                messages.success(request, "İş ilanınız başarıyla yayınlandı!")
+                return redirect('job_list')
+            except ValueError as e:
+                messages.error(request, str(e))
+                return redirect('create_job')
     else:
         form = JobForm()
     return render(request, 'create_job.html', {'form': form})
 
 def job_list(request):
     query = request.GET.get('q')
-    if query:
-        jobs = Job.objects.filter(
-            Q(title__icontains=query) | Q(description__icontains=query),
-            is_active=True
-        ).order_by('-created_at')
-    else:
-        jobs = Job.objects.filter(is_active=True).order_by('-created_at')
-    
+    jobs = get_active_jobs(query=query)
     return render(request, 'job_list.html', {'jobs': jobs, 'query': query})
-
-# --- YENİ: SANATÇI YETENEK İLANI SİSTEMİ (HİÇBİR ŞEYİ BOZMADAN EKLENDİ) ---
 
 @login_required
 def create_talent_ad(request):
-    # Sanatçı kontrolü (create_job ile aynı mantıkta)
-    user_role = str(request.user.role).strip().lower()
-    
-    if user_role != 'artist':
-        messages.error(request, f"Hata: Rolünüz '{user_role}'. Yetenek ilanı vermek için 'artist' olmalısınız.")
+    # KAPIDAN ÇEVİRME: Sayfaya girişi en baştan engeller
+    if str(request.user.role).lower() != 'artist':
+        messages.error(request, "Yetenek ilanı sayfasına girmek için 'Sanatçı / Oyuncu' olmalısınız.")
         return redirect('home')
-    
+
     if request.method == 'POST':
         form = TalentListingForm(request.POST)
         if form.is_valid():
-            ad = form.save(commit=False)
-            ad.artist = request.user
-            ad.save()
-            messages.success(request, "Yetenek profiliniz başarıyla yayınlandı!")
-            return redirect('talent_list')
+            try:
+                create_talent_ad_service(request.user, **form.cleaned_data)
+                messages.success(request, "Yetenek profiliniz başarıyla yayınlandı!")
+                return redirect('talent_list')
+            except ValueError as e:
+                messages.error(request, str(e))
+                return redirect('create_talent_ad')
     else:
         form = TalentListingForm()
     return render(request, 'create_talent_ad.html', {'form': form})
@@ -102,15 +91,5 @@ def create_talent_ad(request):
 def talent_list(request):
     query = request.GET.get('q')
     category = request.GET.get('category')
-    
-    talents = TalentListing.objects.filter(is_active=True).order_by('-created_at')
-    
-    if query:
-        talents = talents.filter(
-            Q(title__icontains=query) | Q(skills__icontains=query) | Q(experience__icontains=query)
-        )
-    
-    if category:
-        talents = talents.filter(category=category)
-        
+    talents = get_active_talents(query=query, category=category)
     return render(request, 'talent_list.html', {'talents': talents, 'query': query})
