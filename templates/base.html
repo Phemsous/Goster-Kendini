@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Göster Kendini</title>
+</head>
+<body>
+
+    <nav>
+        <a href="{% url 'home' %}">Ana Sayfa</a>
+
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile_detail' %}">Profil</a>
+            <a href="{% url 'logout' %}">Çıkış Yap</a>
+        {% else %}
+            <a href="{% url 'login' %}">Giriş Yap</a>
+            <a href="{% url 'register' %}">Kayıt Ol</a>
+        {% endif %}
+    </nav>
+
+    <hr>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+</body>
+</html>

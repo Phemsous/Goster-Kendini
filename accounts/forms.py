@@ -1,14 +1,22 @@
 from django import forms
-from .models import User, Job, TalentListing
+from .models import User, Profile
+
 
 class RegisterForm(forms.ModelForm):
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Şifre'}), 
-        label="Şifre"
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Şifre'
+        }),
+        label='Şifre'
     )
+
     confirm_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Şifreyi Doğrula'}), 
-        label="Şifre (Tekrar)"
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Şifreyi Tekrar Girin'
+        }),
+        label='Şifre (Tekrar)'
     )
 
     class Meta:
@@ -20,9 +28,17 @@ class RegisterForm(forms.ModelForm):
             'role': 'Hesap Türü',
         }
         widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Kullanıcı Adı'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'E-posta Adresi'}),
-            'role': forms.Select(attrs={'class': 'form-select'}),
+            'username': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Kullanıcı adınızı girin'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'E-posta adresinizi girin'
+            }),
+            'role': forms.Select(attrs={
+                'class': 'form-select'
+            }),
         }
 
     def clean(self):
@@ -31,55 +47,26 @@ class RegisterForm(forms.ModelForm):
         confirm_password = cleaned_data.get("confirm_password")
 
         if password and confirm_password and password != confirm_password:
-            self.add_error('confirm_password', "Şifreler eşleşmiyor, lütfen kontrol edin.")
+            self.add_error('confirm_password', 'Şifreler eşleşmiyor.')
 
         return cleaned_data
 
 
-class JobForm(forms.ModelForm):
+class ProfileForm(forms.ModelForm):
     class Meta:
-        model = Job
-        fields = ['title', 'description']
+        model = Profile
+        fields = ['full_name', 'avatar_url', 'bio', 'skills_and_instruments', 'past_experience']
         labels = {
-            'title': 'İlan Başlığı',
-            'description': 'İlan Detayları',
+            'full_name': 'Ad Soyad',
+            'avatar_url': 'Avatar URL',
+            'bio': 'Biyografi',
+            'skills_and_instruments': 'Yetenekler / Enstrümanlar',
+            'past_experience': 'Geçmiş Deneyim',
         }
         widgets = {
-            'title': forms.TextInput(attrs={
-                'class': 'form-control', 
-                'placeholder': 'Örn: Kısa Film İçin Başrol Kadın Oyuncu Aranıyor'
-            }),
-            'description': forms.Textarea(attrs={
-                'class': 'form-control', 
-                'rows': 5, 
-                'placeholder': 'Proje detaylarını, çekim tarihlerini ve aradığınız özellikleri buraya yazın...'
-            }),
-        }
-
-# --- SİSTEMİ BOZMADAN EKLENEN YENİ FORM ---
-class TalentListingForm(forms.ModelForm):
-    class Meta:
-        model = TalentListing
-        fields = ['title', 'category', 'experience', 'skills']
-        labels = {
-            'title': 'Yetenek Başlığı',
-            'category': 'Kategori',
-            'experience': 'Deneyimler',
-            'skills': 'Ek Yetenekler / Uzmanlıklar',
-        }
-        widgets = {
-            'title': forms.TextInput(attrs={
-                'class': 'form-control', 
-                'placeholder': 'Örn: Profesyonel Oyuncu ve Seslendirme Sanatçısı'
-            }),
-            'category': forms.Select(attrs={'class': 'form-select'}),
-            'experience': forms.Textarea(attrs={
-                'class': 'form-control', 
-                'rows': 4, 
-                'placeholder': 'Daha önce yer aldığınız projeler, aldığınız eğitimler...'
-            }),
-            'skills': forms.TextInput(attrs={
-                'class': 'form-control', 
-                'placeholder': 'Örn: İngilizce, Ehliyet, Binicilik, Piyano...'
-            }),
+            'full_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'avatar_url': forms.TextInput(attrs={'class': 'form-control'}),
+            'bio': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'skills_and_instruments': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'past_experience': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
         }

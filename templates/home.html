@@ -28,10 +28,9 @@
                 <div class="d-flex align-items-center">
                     {% if user.is_authenticated %}
                         <span class="text-white me-3">Hoş geldin, <strong>{{ user.username }}</strong>!</span>
-                        <a href="/logout/" class="btn btn-outline-light btn-sm">Çıkış Yap</a>
-                    {% else %}
+                        <a href="{% url 'logout' %}">Çıkış Yap</a>
                         <a href="/login/" class="btn btn-outline-light me-2">Giriş Yap</a>
-                        <a href="/register/" class="btn btn-danger">Kayıt Ol</a>
+                        <a href="{% url 'register' %}">Kayıt Ol</a>
                     {% endif %}
                 </div>
             </div>
@@ -59,14 +58,14 @@
                     
                     {% if user.role == 'artist' %}
                         <a href="#" class="btn btn-danger btn-lg px-4 py-3 fw-bold">VİDEO YÜKLE</a>
-                        <a href="/talents/new/" class="btn btn-primary btn-lg px-4 py-3 fw-bold shadow">YETENEK İLANI VER</a>
+                        <a href="/talents/create/" class="btn ...">Yetenek İlanı Ver</a>
                     {% elif user.role == 'producer' %}
-                        <a href="/jobs/new/" class="btn btn-danger btn-lg px-4 py-3 fw-bold">İŞ İLANI YAYINLA</a>
+                        <a href="{% url 'create_job' %}" class="btn btn-danger ...
                         <a href="/talents/" class="btn btn-primary btn-lg px-4 py-3 fw-bold shadow">SANATÇI KEŞFET</a>
                     {% endif %}
 
                 {% else %}
-                    <a href="/register/" class="btn btn-danger btn-lg px-5 py-3 fw-bold">HEMEN KATIL</a>
+                    <a href="{% url 'register' %}">Kayıt Ol</a>
                 {% endif %}
                 
                 <a href="/jobs/" class="btn btn-light btn-lg px-4 py-3 fw-bold">İLANLARI GÖR</a>
