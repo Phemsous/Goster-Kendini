@@ -55,7 +55,7 @@ def profile_detail(request):
 
 @login_required
 def profile_edit(request):
-    profile = Profile.objects.get(user=request.user)
+    profile, created = Profile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
         form = ProfileForm(request.POST, instance=profile)

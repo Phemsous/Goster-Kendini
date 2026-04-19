@@ -9,13 +9,30 @@ class Video(models.Model):
     like_count = models.IntegerField(default=0)
     dislike_count = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
-    
-    # --- YENİ EKLENEN FAVORİLER SATIRI ---
     favorites = models.ManyToManyField(User, related_name='favorite_videos', blank=True)
 
-    # (Minik düzeltme: Çift alt çizgi eklendi)
     def __str__(self):
         return self.title
+
+    @property
+    def get_embed_url(self):
+        """
+        Normal YouTube linklerini (watch?v=...) iframe içinde 
+        çalışacak 'embed' formatına dönüştürür.
+        """
+        url = self.video_url
+        if not url:
+            return ""
+
+        if 'watch?v=' in url:
+            video_id = url.split('v=')[1].split('&')[0]
+            return f"https://www.youtube.com/embed/{video_id}"
+        
+        elif 'youtu.be/' in url:
+            video_id = url.split('/')[-1].split('?')[0]
+            return f"https://www.youtube.com/embed/{video_id}"
+        
+        return url
 
 
 class Comment(models.Model):
