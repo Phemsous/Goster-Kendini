@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q  # Arama filtrelemesi için bu şart!
+from django.db.models import Q  
 
 from .forms import JobForm
 from .services import create_job_service
@@ -12,7 +12,6 @@ from .selectors import get_active_jobs
 def create_job(request):
     if str(request.user.role).lower() != 'producer':
         messages.error(request, "İş ilanı oluşturmak için 'Yapımcı / Casting' hesabı kullanmalısınız.")
-        # Burada 'home' yerine ana sayfan hangisiyse ona yönlendirdiğinden emin ol
         return redirect('job_list') 
 
     if request.method == 'POST':
@@ -32,20 +31,15 @@ def create_job(request):
 
 
 def job_list(request):
-    # 1. Önce selector üzerinden tüm aktif ilanları çekiyoruz
     jobs = get_active_jobs()
     
-    # 2. URL'den 'q' parametresi (arama kelimesi) gelmiş mi bakıyoruz
-    query = request.GET.get('q')
-    
-    # 3. Eğer kullanıcı bir şey aratmışsa, listeyi filtreliyoruz
+    query = request.GET.get('q')    
+
     if query:
         jobs = jobs.filter(
             Q(title__icontains=query) | 
             Q(description__icontains=query)
         ).distinct()
-
-    # 4. Sonuçları ve arama kelimesini (kutuda kalsın diye) sayfaya gönderiyoruz
     return render(request, 'jobs/job_list.html', {
         'jobs': jobs,
         'query': query

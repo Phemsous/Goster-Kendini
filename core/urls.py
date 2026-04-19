@@ -1,14 +1,11 @@
 from django.contrib import admin
 from django.urls import path, include
-from core.views import home
+from videos.views import video_list 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),   
+    path('', video_list, name='home'),
 
-    # Ana sayfa
-    path('', home, name='home'),
-
-    # App URL'leri
     path('accounts/', include('accounts.urls')),
     path('videos/', include('videos.urls')),
     path('jobs/', include('jobs.urls')),
