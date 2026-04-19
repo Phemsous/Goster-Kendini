@@ -11,6 +11,10 @@
             background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=2070&auto=format&fit=crop'); 
             background-size: cover; color: white; padding: 100px 0; 
         }
+        .logout-link { color: #dc3545; text-decoration: none; transition: 0.3s; }
+        .logout-link:hover { color: #ff6b6b; }
+        .nav-profile-link { color: white; text-decoration: none; margin-right: 15px; font-weight: bold; transition: 0.3s; }
+        .nav-profile-link:hover { color: #dc3545; }
     </style>
 </head>
 <body>
@@ -28,9 +32,13 @@
                 <div class="d-flex align-items-center">
                     {% if user.is_authenticated %}
                         <span class="text-white me-3">Hoş geldin, <strong>{{ user.username }}</strong>!</span>
-                        <a href="{% url 'logout' %}">Çıkış Yap</a>
-                        <a href="/login/" class="btn btn-outline-light me-2">Giriş Yap</a>
-                        <a href="{% url 'register' %}">Kayıt Ol</a>
+                        
+                        <a href="{% url 'profile_detail' %}" class="nav-profile-link">Profilim</a>
+                        
+                        <a href="{% url 'logout' %}" class="logout-link fw-bold">Çıkış Yap</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-light me-2">Giriş Yap</a>
+                        <a href="{% url 'register' %}" class="btn btn-danger">Kayıt Ol</a>
                     {% endif %}
                 </div>
             </div>
@@ -57,18 +65,18 @@
                 {% if user.is_authenticated %}
                     
                     {% if user.role == 'artist' %}
-                        <a href="#" class="btn btn-danger btn-lg px-4 py-3 fw-bold">VİDEO YÜKLE</a>
-                        <a href="/talents/create/" class="btn ...">Yetenek İlanı Ver</a>
+                        <a href="{% url 'upload_video' %}" class="btn btn-danger btn-lg px-4 py-3 fw-bold">VİDEO YÜKLE</a>
+                        <a href="/talents/create/" class="btn btn-outline-light btn-lg px-4 py-3 fw-bold">Yetenek İlanı Ver</a>
                     {% elif user.role == 'producer' %}
-                        <a href="{% url 'create_job' %}" class="btn btn-danger ...
+                        <a href="{% url 'create_job' %}" class="btn btn-danger btn-lg px-4 py-3 fw-bold">İLAN OLUŞTUR</a>
                         <a href="/talents/" class="btn btn-primary btn-lg px-4 py-3 fw-bold shadow">SANATÇI KEŞFET</a>
                     {% endif %}
 
                 {% else %}
-                    <a href="{% url 'register' %}">Kayıt Ol</a>
+                    <a href="{% url 'register' %}" class="btn btn-danger btn-lg px-4 py-3 fw-bold shadow">Kayıt Ol</a>
                 {% endif %}
                 
-                <a href="/jobs/" class="btn btn-light btn-lg px-4 py-3 fw-bold">İLANLARI GÖR</a>
+                <a href="/jobs/" class="btn btn-light btn-lg px-4 py-3 fw-bold text-dark">İLANLARI GÖR</a>
             </div>
         </div>
     </header>
@@ -84,7 +92,19 @@
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">{{ video.title }}</h5>
-                        <p class="card-text text-muted small">Yükleyen: {{ video.user.username }}</p>
+                        <p class="card-text text-muted small mb-3">Yükleyen: {{ video.user.username }}</p>
+
+                        {% csrf_token %}
+                        <button onclick="toggleFavorite({{ video.id }})" 
+                                id="fav-btn-{{ video.id }}" 
+                                data-url="{% url 'favorite_video' video.id %}"
+                                class="btn btn-sm {% if request.user in video.favorites.all %}btn-danger{% else %}btn-outline-danger{% endif %} w-100 fw-bold transition-all">
+                            {% if request.user in video.favorites.all %}
+                                ❤️ Favorilerden Çıkar
+                            {% else %}
+                                🤍 Favorilere Ekle
+                            {% endif %}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -95,5 +115,35 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    function toggleFavorite(videoId) {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const btn = document.getElementById(`fav-btn-${videoId}`);
+        const url = btn.getAttribute('data-url');
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.is_favorited) {
+                btn.innerHTML = '❤️ Favorilerden Çıkar';
+                btn.classList.remove('btn-outline-danger');
+                btn.classList.add('btn-danger');
+            } else {
+                btn.innerHTML = '🤍 Favorilere Ekle';
+                btn.classList.remove('btn-danger');
+                btn.classList.add('btn-outline-danger');
+            }
+        })
+        .catch(error => console.error('Hata:', error));
+    }
+    </script>
 </body>
 </html>

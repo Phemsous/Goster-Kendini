@@ -67,3 +67,12 @@ def profile_edit(request):
         form = ProfileForm(instance=profile)
 
     return render(request, 'accounts/profile_edit.html', {'form': form})
+@login_required(login_url='/login/')
+def profile_detail(request):  # <-- İsmini senin urls.py dosyana göre düzelttik
+    favorite_videos = request.user.favorite_videos.all()
+    
+    context = {
+        'favorite_videos': favorite_videos
+    }
+    # Eğer tasarım dosyanın adı farklıysa 'accounts/profile.html' kısmını ona göre değiştirebilirsin
+    return render(request, 'accounts/profile.html', context)

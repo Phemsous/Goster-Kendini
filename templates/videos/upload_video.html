@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sahneye Çık | Video Yükle</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #121212; color: white; min-height: 100vh; }
+        .navbar { background-color: #1a1a1a; }
+        .upload-card { 
+            background-color: #1a1a1a; 
+            border: 1px solid #333; 
+            border-radius: 20px; 
+            overflow: hidden;
+        }
+        .form-control, .form-select {
+            background-color: #252525;
+            border: 1px solid #444;
+            color: white;
+            padding: 12px;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: #2d2d2d;
+            border-color: #dc3545;
+            color: white;
+            box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+        }
+        .btn-publish { 
+            background-color: #dc3545; 
+            border: none; 
+            font-weight: bold; 
+            padding: 15px;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .btn-publish:hover { background-color: #bb2d3b; transform: scale(1.02); }
+        .yt-hint { font-size: 0.85rem; color: #aaa; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-danger" href="/">GÖSTER KENDİNİ</a>
+            <a href="/" class="btn btn-outline-light btn-sm">Vazgeç</a>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-7 col-lg-6">
+                
+                <div class="upload-card shadow-lg p-4 p-md-5">
+                    <div class="text-center mb-5">
+                        <h2 class="fw-bold display-6 mb-2">Sahnede <span class="text-danger">Sıra Sende!</span></h2>
+                        <p class="text-muted">YouTube linkini paylaş, yeteneğin milyonlara ulaşsın.</p>
+                    </div>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-uppercase">Videonun Başlığı</label>
+                            <input type="text" name="title" class="form-control" placeholder="Örn: Akustik Piyano Performansım" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-uppercase">YouTube Video Linki</label>
+                            <input type="url" name="video_url" class="form-control" placeholder="https://www.youtube.com/watch?v=..." required>
+                            <div class="yt-hint mt-2">
+                                <i class="bi bi-info-circle"></i> Videonuzun YouTube'da "Herkese Açık" olduğundan emin olun.
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="form-label fw-bold small text-uppercase">Kategori Seç</label>
+                            <select name="category" class="form-select" required>
+                                <option value="" disabled selected>Yetenek türünü seçin...</option>
+                                <option value="müzik">Müzik & Enstrüman</option>
+                                <option value="dans">Dans & Koreografi</option>
+                                <option value="oyunculuk">Oyunculuk & Tiyatro</option>
+                                <option value="komedi">Stand-up & Komedi</option>
+                                <option value="diger">Diğer</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger btn-publish w-100 shadow">
+                            VİDEOYU SİTEYE EKLE
+                        </button>
+                    </form>
+
+                </div>
+
+                <p class="text-center text-muted mt-4 small">
+                    Yükleyerek kullanım koşullarımızı kabul etmiş sayılırsınız.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

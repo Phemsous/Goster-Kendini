@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profili Düzenle | Göster Kendini</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #121212; color: white; }
+        .navbar { background-color: #1a1a1a; }
+        .edit-card { 
+            background-color: #1a1a1a; 
+            border: 1px solid #333; 
+            border-radius: 15px; 
+            max-width: 600px; 
+            margin: 50px auto;
+        }
+        .form-control, .form-select {
+            background-color: #252525;
+            border: 1px solid #444;
+            color: white;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: #2d2d2d;
+            border-color: #dc3545;
+            color: white;
+            box-shadow: none;
+        }
+        .btn-save { background-color: #dc3545; border: none; font-weight: bold; padding: 12px; }
+        .btn-save:hover { background-color: #bb2d3b; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-danger" href="/">GÖSTER KENDİNİ</a>
+            <a href="{% url 'profile_detail' %}" class="btn btn-outline-light btn-sm">Geri Dön</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="edit-card p-5 shadow-lg">
+            <h2 class="fw-bold mb-4 text-center">Profilini Güncelle</h2>
+            <p class="text-muted text-center mb-5">Bilgilerini buradan değiştirebilirsin.</p>
+
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Kullanıcı Adı</label>
+                    <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">E-posta Adresi</label>
+                    <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+                </div>
+
+                <div class="mb-5">
+                    <label class="form-label fw-bold">Platform Rolün</label>
+                    <select name="role" class="form-select">
+                        <option value="artist" {% if user.role == 'artist' %}selected{% endif %}>Sanatçı / Yetenek</option>
+                        <option value="producer" {% if user.role == 'producer' %}selected{% endif %}>Yapımcı / Prodüktör</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-danger btn-save w-100 mb-3">DEĞİŞİKLİKLERİ KAYDET</button>
+                <a href="{% url 'profile_detail' %}" class="btn btn-link w-100 text-decoration-none text-muted">Vazgeç</a>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

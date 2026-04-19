@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse  # AJAX işlemleri için eklendi
 
 from .models import Video
 from .forms import VideoForm, CommentForm
@@ -64,3 +65,19 @@ def react_video(request, video_id, reaction_type):
     react_to_video_service(request.user, video, reaction_type)
     messages.success(request, 'Reaksiyon kaydedildi.')
     return redirect('video_detail', video_id=video.id)
+
+
+@login_required(login_url='/accounts/login/')
+def favorite_video(request, video_id):
+    video = get_object_or_404(Video, id=video_id)
+    
+    # AJAX Mantığı: Sayfa yenileme yok, JSON cevabı var
+    if request.user in video.favorites.all():
+        video.favorites.remove(request.user)
+        is_favorited = False
+    else:
+        video.favorites.add(request.user)
+        is_favorited = True
+        
+    # JavaScript'in okuyup butonu değiştireceği veri paketini gönderiyoruz
+    return JsonResponse({'is_favorited': is_favorited})
