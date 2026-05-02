@@ -11,4 +11,5 @@ urlpatterns = [
     path('jobs/', include('jobs.urls')),
     path('talents/', include('talents.urls')),
     path('social/', include('social.urls')),
+    path('messages/', include('messaging.urls')),  # YENİ
 ]
