@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ other_user.username }} | Profil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #121212; color: white; }
+        .navbar { background-color: #1a1a1a; }
+        .profile-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 15px;
+        }
+        .avatar {
+            width: 100px; height: 100px;
+            background: #dc3545;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 40px; font-weight: bold;
+            margin: 0 auto 15px;
+        }
+        .video-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+        .video-card:hover { border-color: #dc3545; transform: translateY(-3px); }
+        .thumbnail-wrapper {
+            position: relative; width: 100%; padding-top: 56.25%; background: #000; overflow: hidden; border-radius: 10px 10px 0 0;
+        }
+        .thumbnail-wrapper img {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-danger" href="/">GÖSTER KENDİNİ</a>
+            <div class="ms-auto d-flex gap-2">
+                <a href="{% url 'user_search' %}" class="btn btn-outline-light btn-sm">← Geri</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="row">
+            <!-- Sol: Profil bilgileri -->
+            <div class="col-md-4 mb-4">
+                <div class="profile-card p-4 text-center">
+                    <div class="avatar">{{ other_user.username|first|upper }}</div>
+                    <h4 class="fw-bold">{{ other_user.username }}</h4>
+                    <p class="text-muted small">
+                        {% if other_user.role == 'artist' %}🎨 Sanatçı
+                        {% elif other_user.role == 'producer' %}🎬 Yapımcı
+                        {% else %}Üye{% endif %}
+                    </p>
+                    <hr class="border-secondary">
+                    <a href="{% url 'conversation' other_user.id %}" 
+                       class="btn btn-danger w-100 fw-bold mt-2">
+                        💬 Mesaj Gönder
+                    </a>
+                </div>
+            </div>
+
+            <!-- Sağ: Videoları -->
+            <div class="col-md-8">
+                <h5 class="fw-bold mb-3">{{ other_user.username }}'in Videoları</h5>
+                <div class="row">
+                    {% for video in videos %}
+                    <div class="col-md-6 mb-4">
+                        <div class="video-card">
+                            <div class="thumbnail-wrapper">
+                                <img src="{{ video.get_thumbnail_url }}"
+                                     alt="{{ video.title }}"
+                                     onerror="this.src='https://via.placeholder.com/480x270/1a1a1a/dc3545?text=Video'">
+                            </div>
+                            <div class="p-3">
+                                <h6 class="fw-bold">{{ video.title }}</h6>
+                                <span class="badge bg-secondary">{{ video.category }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">Bu kullanıcının henüz videosu yok.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
@@ -6,7 +6,7 @@ from django.contrib import messages
 
 from .forms import RegisterForm, ProfileForm
 from .services import create_user_service
-from .models import Profile
+from .models import Profile, User
 
 
 def register(request):
@@ -19,7 +19,6 @@ def register(request):
             return redirect('home')
     else:
         form = RegisterForm()
-
     return render(request, 'accounts/register.html', {'form': form})
 
 
@@ -30,14 +29,12 @@ def user_login(request):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
-
             if user is not None:
                 login(request, user)
                 messages.success(request, 'Giriş başarılı.')
                 return redirect('home')
     else:
         form = AuthenticationForm()
-
     return render(request, 'accounts/login.html', {'form': form})
 
 
@@ -49,29 +46,43 @@ def user_logout(request):
 
 @login_required
 def profile_detail(request):
-    profile = Profile.objects.get(user=request.user)
-    return render(request, 'accounts/profile_detail.html', {'profile': profile})
+    favorite_videos = request.user.favorite_videos.all()
+    return render(request, 'accounts/profile.html', {
+        'favorite_videos': favorite_videos
+    })
 
 
 @login_required
 def profile_edit(request):
-    profile, created = Profile.objects.get_or_create(user=request.user)
-
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=profile)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Profil güncellendi.')
-            return redirect('profile_detail')
-    else:
-        form = ProfileForm(instance=profile)
+        request.user.username = request.POST.get('username', request.user.username)
+        request.user.email = request.POST.get('email', request.user.email)
+        request.user.role = request.POST.get('role', request.user.role)
+        request.user.save()
+        messages.success(request, 'Profil güncellendi.')
+        return redirect('profile_detail')
+    return render(request, 'accounts/profile_edit.html')
 
-    return render(request, 'accounts/profile_edit.html', {'form': form})
-@login_required(login_url='/login/')
-def profile_detail(request): 
-    favorite_videos = request.user.favorite_videos.all()
-    
-    context = {
-        'favorite_videos': favorite_videos
-    }
-    return render(request, 'accounts/profile.html', context)
+
+# --- YENİ: Kullanıcı arama ---
+@login_required
+def user_search(request):
+    query = request.GET.get('q', '')
+    users = []
+    if query:
+        users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)
+    return render(request, 'accounts/user_search.html', {
+        'users': users,
+        'query': query
+    })
+
+
+# --- YENİ: Başka kullanıcının profili ---
+@login_required
+def public_profile(request, user_id):
+    other_user = get_object_or_404(User, id=user_id)
+    videos = other_user.videos.all()
+    return render(request, 'accounts/public_profile.html', {
+        'other_user': other_user,
+        'videos': videos
+    })
