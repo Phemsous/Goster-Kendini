@@ -15,24 +15,29 @@ class Video(models.Model):
         return self.title
 
     @property
-    def get_embed_url(self):
-        """
-        Normal YouTube linklerini (watch?v=...) iframe içinde 
-        çalışacak 'embed' formatına dönüştürür.
-        """
+    def get_video_id(self):
         url = self.video_url
         if not url:
             return ""
-
         if 'watch?v=' in url:
-            video_id = url.split('v=')[1].split('&')[0]
-            return f"https://www.youtube.com/embed/{video_id}"
-        
+            return url.split('v=')[1].split('&')[0]
         elif 'youtu.be/' in url:
-            video_id = url.split('/')[-1].split('?')[0]
-            return f"https://www.youtube.com/embed/{video_id}"
-        
-        return url
+            return url.split('/')[-1].split('?')[0]
+        return ""
+
+    @property
+    def get_embed_url(self):
+        video_id = self.get_video_id
+        if not video_id:
+            return ""
+        return f"https://www.youtube-nocookie.com/embed/{video_id}"
+
+    @property
+    def get_thumbnail_url(self):
+        video_id = self.get_video_id
+        if not video_id:
+            return ""
+        return f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
 
 
 class Comment(models.Model):

@@ -15,10 +15,41 @@
         .logout-link:hover { color: #ff6b6b; }
         .nav-profile-link { color: white; text-decoration: none; margin-right: 15px; font-weight: bold; transition: 0.3s; }
         .nav-profile-link:hover { color: #dc3545; }
-        
-        /* Video kartları için ekstra şıklık */
-        .video-card { transition: transform 0.3s; border: 1px solid #eee; }
-        .video-card:hover { transform: translateY(-5px); }
+        .video-card { transition: transform 0.3s; border: 1px solid #eee; cursor: pointer; }
+        .video-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important; }
+        .thumbnail-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            background: #000;
+            overflow: hidden;
+        }
+        .thumbnail-wrapper img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s;
+        }
+        .video-card:hover .thumbnail-wrapper img { opacity: 0.75; }
+        .play-btn {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px; height: 60px;
+            background: rgba(220, 53, 69, 0.9);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s, background 0.2s;
+            pointer-events: none;
+        }
+        .video-card:hover .play-btn { transform: translate(-50%, -50%) scale(1.15); background: #dc3545; }
+        .play-btn svg { width: 24px; height: 24px; fill: white; margin-left: 4px; }
+        .modal-body .ratio { border-radius: 8px; overflow: hidden; }
+        .modal-content { background: #1a1a1a; border: 1px solid #333; }
+        .modal-header { border-bottom: 1px solid #333; }
+        .modal-title { color: white; }
+        .btn-close { filter: invert(1); }
     </style>
 </head>
 <body>
@@ -81,33 +112,34 @@
 
     <main class="container my-5">
         <h2 class="mb-4 fw-bold">Öne Çıkan Yetenekler</h2>
+        {% csrf_token %}
         <div class="row">
             {% for video in videos %}
             <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm border-0 video-card">
-                    
-                    <div class="ratio ratio-16x9">
-                        <iframe 
-                            src="{{ video.get_embed_url }}" 
-                            title="{{ video.title }}" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            allowfullscreen>
-                        </iframe>
+                <div class="card h-100 shadow-sm border-0 video-card"
+                     onclick="openVideoModal('{{ video.get_embed_url }}', '{{ video.title|escapejs }}')">
+
+                    <div class="thumbnail-wrapper">
+                        <img src="{{ video.get_thumbnail_url }}"
+                             alt="{{ video.title }}"
+                             onerror="this.src='https://via.placeholder.com/480x270/1a1a1a/dc3545?text=Video'">
+                        <div class="play-btn">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
                     </div>
+
                     <div class="card-body">
                         <h5 class="card-title fw-bold text-dark">{{ video.title }}</h5>
-                        <p class="card-text text-muted small mb-3">Yükleyen: <strong>{{ video.user.username }}</strong></p>
-
-                        {% csrf_token %}
-                        <button onclick="toggleFavorite({{ video.id }})" 
-                                id="fav-btn-{{ video.id }}" 
+                        <p class="card-text text-muted small mb-3">
+                            Yükleyen: <strong>{{ video.user.username }}</strong>
+                            <span class="badge bg-light text-secondary ms-1">{{ video.category }}</span>
+                        </p>
+                        <button onclick="event.stopPropagation(); toggleFavorite({{ video.id }})"
+                                id="fav-btn-{{ video.id }}"
                                 data-url="{% url 'favorite_video' video.id %}"
-                                class="btn btn-sm {% if request.user in video.favorites.all %}btn-danger{% else %}btn-outline-danger{% endif %} w-100 fw-bold transition-all">
-                            {% if request.user in video.favorites.all %}
-                                ❤️ Favorilerden Çıkar
-                            {% else %}
-                                🤍 Favorilere Ekle
-                            {% endif %}
+                                class="btn btn-sm {% if request.user in video.favorites.all %}btn-danger{% else %}btn-outline-danger{% endif %} w-100 fw-bold">
+                            {% if request.user in video.favorites.all %}❤️ Favorilerden Çıkar
+                            {% else %}🤍 Favorilere Ekle{% endif %}
                         </button>
                     </div>
                 </div>
@@ -118,14 +150,45 @@
         </div>
     </main>
 
+    <!-- Video Modal -->
+    <div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="videoModalTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-3">
+                    <div class="ratio ratio-16x9">
+                        <iframe id="videoModalIframe"
+                                src=""
+                                title="Video"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
+    function openVideoModal(embedUrl, title) {
+        document.getElementById('videoModalTitle').textContent = title;
+        document.getElementById('videoModalIframe').src = embedUrl + '?autoplay=1&rel=0';
+        const modal = new bootstrap.Modal(document.getElementById('videoModal'));
+        modal.show();
+    }
+
+    document.getElementById('videoModal').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('videoModalIframe').src = '';
+    });
+
     function toggleFavorite(videoId) {
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         const btn = document.getElementById(`fav-btn-${videoId}`);
         const url = btn.getAttribute('data-url');
-
         fetch(url, {
             method: 'POST',
             headers: {
