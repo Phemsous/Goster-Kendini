@@ -47,8 +47,10 @@ def user_logout(request):
 @login_required
 def profile_detail(request):
     favorite_videos = request.user.favorite_videos.all()
+    my_videos = request.user.videos.all().order_by('-created_at')
     return render(request, 'accounts/profile.html', {
-        'favorite_videos': favorite_videos
+        'favorite_videos': favorite_videos,
+        'my_videos': my_videos,
     })
 
 

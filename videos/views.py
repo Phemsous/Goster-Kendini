@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse  # AJAX işlemleri için eklendi
+from django.http import JsonResponse
 
 from .models import Video
 from .forms import VideoForm, CommentForm
 from .services import create_video_service, create_comment_service, react_to_video_service
-from .selectors import get_all_videos, get_video_by_id
+from .selectors import get_all_videos, get_video_by_id, get_filtered_videos
 
 
 @login_required
@@ -24,7 +24,6 @@ def upload_video(request):
             return redirect('video_list')
     else:
         form = VideoForm()
-
     return render(request, 'videos/upload_video.html', {'form': form})
 
 
@@ -33,11 +32,32 @@ def video_list(request):
     return render(request, 'videos/video_list.html', {'videos': videos})
 
 
+def video_explore(request):
+    query = request.GET.get('q', '')
+    category = request.GET.get('category', '')
+    sort = request.GET.get('sort', 'new')
+    videos = get_filtered_videos(query=query or None, category=category or None, sort=sort)
+    categories = [
+        ('müzik', 'Müzik & Enstrüman'),
+        ('dans', 'Dans & Koreografi'),
+        ('oyunculuk', 'Oyunculuk & Tiyatro'),
+        ('komedi', 'Stand-up & Komedi'),
+        ('diger', 'Diğer'),
+    ]
+    return render(request, 'videos/video_explore.html', {
+        'videos': videos,
+        'query': query,
+        'category': category,
+        'sort': sort,
+        'categories': categories,
+        'video_count': videos.count(),
+    })
+
+
 def video_detail(request, video_id):
     video = get_object_or_404(Video, id=video_id)
     comment_form = CommentForm()
 
-    # Kullanıcının mevcut reaksiyonunu getir
     user_reaction = None
     if request.user.is_authenticated:
         from .models import VideoReaction
@@ -75,7 +95,6 @@ def react_video(request, video_id, reaction_type):
 
     if existing:
         if existing.reaction_type == reaction_type:
-            # Aynı butona tekrar basınca geri al
             existing.delete()
             user_reaction = None
         else:
@@ -86,7 +105,6 @@ def react_video(request, video_id, reaction_type):
         VideoReaction.objects.create(user=request.user, video=video, reaction_type=reaction_type)
         user_reaction = reaction_type
 
-    # Güncel sayıları hesapla
     video.like_count = VideoReaction.objects.filter(video=video, reaction_type='like').count()
     video.dislike_count = VideoReaction.objects.filter(video=video, reaction_type='dislike').count()
     video.save()
@@ -101,14 +119,12 @@ def react_video(request, video_id, reaction_type):
 @login_required(login_url='/accounts/login/')
 def favorite_video(request, video_id):
     video = get_object_or_404(Video, id=video_id)
-    
-    # AJAX Mantığı: Sayfa yenileme yok, JSON cevabı var
+
     if request.user in video.favorites.all():
         video.favorites.remove(request.user)
         is_favorited = False
     else:
         video.favorites.add(request.user)
         is_favorited = True
-        
-    # JavaScript'in okuyup butonu değiştireceği veri paketini gönderiyoruz
+
     return JsonResponse({'is_favorited': is_favorited})
