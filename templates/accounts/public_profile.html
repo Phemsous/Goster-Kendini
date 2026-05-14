@@ -24,7 +24,7 @@ body { background-color: #121212; color: white; }
                     {% else %}Üye{% endif %}
                 </p>
                 <hr class="border-secondary">
-                <a href="{% url 'conversation' other_user.id %}" class="btn btn-danger w-100 fw-bold mt-2">💬 Mesaj Gönder</a>
+                <a href="/messaging/{{ other_user.id }}/" class="btn btn-danger w-100 fw-bold mt-2">💬 Mesaj Gönder</a>
             </div>
         </div>
         <div class="col-md-8">

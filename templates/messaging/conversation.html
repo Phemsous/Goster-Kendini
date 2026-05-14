@@ -21,7 +21,7 @@ body { background-color: #121212; color: white; }
         <a href="{% url 'inbox' %}" class="btn btn-outline-light btn-sm">← Geri</a>
     </div>
     <div class="chat-box" id="chatBox">
-        {% for msg in messages %}
+        {% for msg in chat_messages %}
         <div class="d-flex flex-column {% if msg.sender == request.user %}align-items-end{% else %}align-items-start{% endif %}">
             <div class="bubble {% if msg.sender == request.user %}bubble-sent{% else %}bubble-received{% endif %}">{{ msg.content }}</div>
             <div class="bubble-time {% if msg.sender == request.user %}text-end{% endif %}">{{ msg.created_at|date:"d M H:i" }}</div>

@@ -1,0 +1,340 @@
+{% extends 'base.html' %}
+{% block title %}Videoları Keşfet | Göster Kendini{% endblock %}
+
+{% block extra_style %}
+body { background-color: #121212; color: white; }
+
+.explore-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a1a1a 100%);
+    border-bottom: 1px solid #333;
+    padding: 40px 0 0 0;
+}
+
+.search-bar {
+    background: #252525;
+    border: 1px solid #444;
+    border-radius: 50px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto;
+    transition: border-color 0.3s;
+}
+.search-bar:focus-within { border-color: #dc3545; }
+
+.search-bar input {
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 14px 20px;
+    flex: 1;
+    font-size: 1rem;
+    outline: none;
+}
+.search-bar input::placeholder { color: #888; }
+.search-bar button {
+    background: #dc3545;
+    border: none;
+    color: white;
+    padding: 14px 24px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.search-bar button:hover { background: #bb2d3b; }
+
+.filter-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 20px 0 0 0;
+    scrollbar-width: none;
+}
+.filter-tabs::-webkit-scrollbar { display: none; }
+
+.filter-tab {
+    background: transparent;
+    border: 1px solid #444;
+    color: #aaa;
+    padding: 7px 18px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.filter-tab:hover { border-color: #dc3545; color: white; }
+.filter-tab.active { background: #dc3545; border-color: #dc3545; color: white; font-weight: bold; }
+
+.sort-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 28px 0 20px 0;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.result-count { color: #aaa; font-size: 0.9rem; }
+.result-count strong { color: white; }
+
+.sort-group { display: flex; gap: 8px; }
+.sort-btn {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #aaa;
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.sort-btn:hover { border-color: #555; color: white; }
+.sort-btn.active { background: #2a2a2a; border-color: #dc3545; color: white; }
+
+.video-card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    height: 100%;
+}
+.video-card:hover {
+    transform: translateY(-5px);
+    border-color: #dc3545;
+    box-shadow: 0 8px 30px rgba(220, 53, 69, 0.15);
+}
+
+.thumbnail-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    background: #000;
+    overflow: hidden;
+}
+.thumbnail-wrapper img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s, transform 0.3s;
+}
+.video-card:hover .thumbnail-wrapper img { opacity: 0.75; transform: scale(1.04); }
+
+.play-btn {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.85);
+    width: 52px; height: 52px;
+    background: rgba(220, 53, 69, 0.9);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+}
+.video-card:hover .play-btn { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.play-btn svg { width: 22px; height: 22px; fill: white; margin-left: 3px; }
+
+.card-body { padding: 14px 16px 16px; }
+.card-title { font-size: 0.95rem; font-weight: bold; color: white; margin-bottom: 6px; line-height: 1.3; }
+
+.card-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.username-link { color: #dc3545; font-size: 0.82rem; font-weight: bold; text-decoration: none; }
+.username-link:hover { color: #ff6b6b; }
+.cat-badge {
+    background: #252525;
+    border: 1px solid #444;
+    color: #aaa;
+    font-size: 0.75rem;
+    padding: 2px 10px;
+    border-radius: 50px;
+}
+
+.card-stats { display: flex; gap: 14px; font-size: 0.8rem; color: #666; margin-bottom: 12px; }
+.stat { display: flex; align-items: center; gap: 4px; }
+
+.fav-btn {
+    width: 100%;
+    padding: 7px;
+    border-radius: 8px;
+    font-size: 0.83rem;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid #dc3545;
+    transition: all 0.2s;
+}
+.fav-btn.favorited { background: #dc3545; color: white; }
+.fav-btn.not-favorited { background: transparent; color: #dc3545; }
+.fav-btn:hover { opacity: 0.85; }
+
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: #555;
+}
+.empty-state .icon { font-size: 4rem; margin-bottom: 16px; }
+.empty-state h4 { color: #777; margin-bottom: 8px; }
+.empty-state a { color: #dc3545; text-decoration: none; font-weight: bold; }
+
+{% endblock %}
+
+{% block content %}
+
+<div class="explore-header">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h1 class="fw-bold mb-2">🎬 Videoları <span class="text-danger">Keşfet</span></h1>
+            <p class="text-muted">Tüm yetenekleri ara, filtrele ve keşfet</p>
+        </div>
+
+        <form method="GET" action="{% url 'video_explore' %}">
+            <div class="search-bar mx-auto">
+                <input type="text"
+                       name="q"
+                       value="{{ query }}"
+                       placeholder="Video adı veya kullanıcı ara...">
+                {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
+                {% if sort != 'new' %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+                <button type="submit">🔍 Ara</button>
+            </div>
+        </form>
+
+        <div class="filter-tabs">
+            <a href="{% url 'video_explore' %}{% if query %}?q={{ query }}{% endif %}{% if sort != 'new' %}{% if query %}&{% else %}?{% endif %}sort={{ sort }}{% endif %}"
+               class="filter-tab {% if not category %}active{% endif %}">
+                Tümü
+            </a>
+            {% for cat_value, cat_label in categories %}
+            <a href="?category={{ cat_value }}{% if query %}&q={{ query }}{% endif %}{% if sort != 'new' %}&sort={{ sort }}{% endif %}"
+               class="filter-tab {% if category == cat_value %}active{% endif %}">
+                {{ cat_label }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="container my-4">
+    {% csrf_token %}
+
+    <div class="sort-bar">
+        <div class="result-count">
+            <strong>{{ video_count }}</strong> video bulundu
+            {% if query %} &nbsp;·&nbsp; "<em>{{ query }}</em>" için{% endif %}
+            {% if category %} &nbsp;·&nbsp; {{ category }} kategorisinde{% endif %}
+        </div>
+        <div class="sort-group">
+            <a href="?sort=new{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}"
+               class="sort-btn {% if sort == 'new' %}active{% endif %}">
+                🕐 En Yeni
+            </a>
+            <a href="?sort=popular{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}"
+               class="sort-btn {% if sort == 'popular' %}active{% endif %}">
+                🔥 En Popüler
+            </a>
+        </div>
+    </div>
+
+    {% if videos %}
+    <div class="row g-3">
+        {% for video in videos %}
+        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+            <div class="video-card" onclick="window.location.href='/videos/{{ video.id }}/'">
+
+                <div class="thumbnail-wrapper">
+                    <img src="{{ video.get_thumbnail_url }}"
+                         alt="{{ video.title }}"
+                         loading="lazy"
+                         onerror="this.src='https://via.placeholder.com/480x270/1a1a1a/dc3545?text=Video'">
+                    <div class="play-btn">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="card-title">{{ video.title }}</div>
+
+                    <div class="card-meta">
+                        <a href="{% url 'public_profile' video.user.id %}"
+                           class="username-link"
+                           onclick="event.stopPropagation()">
+                            @{{ video.user.username }}
+                        </a>
+                        <span class="cat-badge">{{ video.category }}</span>
+                    </div>
+
+                    <div class="card-stats">
+                        <span class="stat">👍 {{ video.like_count }}</span>
+                        <span class="stat">💬 {{ video.comments.count }}</span>
+                        <span class="stat">🕐 {{ video.created_at|date:"d M Y" }}</span>
+                    </div>
+
+                    {% if user.is_authenticated %}
+                    <button onclick="event.stopPropagation(); toggleFavorite({{ video.id }})"
+                            id="fav-btn-{{ video.id }}"
+                            data-url="{% url 'favorite_video' video.id %}"
+                            class="fav-btn {% if request.user in video.favorites.all %}favorited{% else %}not-favorited{% endif %}">
+                        {% if request.user in video.favorites.all %}❤️ Favorilerden Çıkar
+                        {% else %}🤍 Favorilere Ekle{% endif %}
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <div class="icon">🎬</div>
+        <h4>Sonuç bulunamadı</h4>
+        <p>
+            {% if query or category %}
+                Arama kriterlerinizle eşleşen video yok.
+                <a href="{% url 'video_explore' %}">Tüm videoları gör</a>
+            {% else %}
+                Henüz hiç video yüklenmemiş.
+                {% if user.is_authenticated and user.role == 'artist' %}
+                    <a href="{% url 'upload_video' %}">İlk videoyu sen yükle!</a>
+                {% endif %}
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_script %}
+function toggleFavorite(videoId) {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const btn = document.getElementById(`fav-btn-${videoId}`);
+    const url = btn.getAttribute('data-url');
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.is_favorited) {
+            btn.innerHTML = '❤️ Favorilerden Çıkar';
+            btn.classList.remove('not-favorited');
+            btn.classList.add('favorited');
+        } else {
+            btn.innerHTML = '🤍 Favorilere Ekle';
+            btn.classList.remove('favorited');
+            btn.classList.add('not-favorited');
+        }
+    })
+    .catch(err => console.error('Hata:', err));
+}
+{% endblock %}

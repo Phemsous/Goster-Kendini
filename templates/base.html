@@ -25,11 +25,19 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="/">Ana Sayfa</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'video_explore' %}">🎬 Videolar</a></li>
                 <li class="nav-item"><a class="nav-link" href="/jobs/">İş İlanları</a></li>
                 <li class="nav-item"><a class="nav-link" href="/talents/">Yetenek Keşfi</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'user_search' %}">🔍 Kullanıcılar</a></li>
                 {% if user.is_authenticated %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'inbox' %}">💬 Mesajlar</a></li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center gap-1" href="{% url 'inbox' %}">
+                        💬 Mesajlar
+                        {% if unread_message_count > 0 %}
+                        <span style="width:8px; height:8px; background:#dc3545; border-radius:50%; display:inline-block;"></span>
+                        {% endif %}
+                    </a>
+                </li>
                 {% endif %}
             </ul>
             <div class="d-flex align-items-center">
