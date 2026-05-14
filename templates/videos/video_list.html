@@ -119,7 +119,7 @@
             {% for video in videos %}
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow-sm border-0 video-card"
-                     onclick="openVideoModal('{{ video.get_embed_url }}', '{{ video.title|escapejs }}')">
+                     onclick="window.location.href='/videos/{{ video.id }}/'">
 
                     <div class="thumbnail-wrapper">
                         <img src="{{ video.get_thumbnail_url }}"

@@ -37,6 +37,13 @@ def video_detail(request, video_id):
     video = get_object_or_404(Video, id=video_id)
     comment_form = CommentForm()
 
+    # Kullanıcının mevcut reaksiyonunu getir
+    user_reaction = None
+    if request.user.is_authenticated:
+        from .models import VideoReaction
+        reaction_obj = VideoReaction.objects.filter(user=request.user, video=video).first()
+        user_reaction = reaction_obj.reaction_type if reaction_obj else None
+
     if request.method == 'POST' and request.user.is_authenticated:
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
@@ -50,7 +57,8 @@ def video_detail(request, video_id):
 
     return render(request, 'videos/video_detail.html', {
         'video': video,
-        'comment_form': comment_form
+        'comment_form': comment_form,
+        'user_reaction': user_reaction,
     })
 
 
@@ -59,12 +67,35 @@ def react_video(request, video_id, reaction_type):
     video = get_object_or_404(Video, id=video_id)
 
     if reaction_type not in ['like', 'dislike']:
-        messages.error(request, 'Geçersiz reaksiyon.')
-        return redirect('video_detail', video_id=video.id)
+        return JsonResponse({'error': 'Geçersiz reaksiyon.'}, status=400)
 
-    react_to_video_service(request.user, video, reaction_type)
-    messages.success(request, 'Reaksiyon kaydedildi.')
-    return redirect('video_detail', video_id=video.id)
+    from .models import VideoReaction
+
+    existing = VideoReaction.objects.filter(user=request.user, video=video).first()
+
+    if existing:
+        if existing.reaction_type == reaction_type:
+            # Aynı butona tekrar basınca geri al
+            existing.delete()
+            user_reaction = None
+        else:
+            existing.reaction_type = reaction_type
+            existing.save()
+            user_reaction = reaction_type
+    else:
+        VideoReaction.objects.create(user=request.user, video=video, reaction_type=reaction_type)
+        user_reaction = reaction_type
+
+    # Güncel sayıları hesapla
+    video.like_count = VideoReaction.objects.filter(video=video, reaction_type='like').count()
+    video.dislike_count = VideoReaction.objects.filter(video=video, reaction_type='dislike').count()
+    video.save()
+
+    return JsonResponse({
+        'like_count': video.like_count,
+        'dislike_count': video.dislike_count,
+        'user_reaction': user_reaction,
+    })
 
 
 @login_required(login_url='/accounts/login/')
