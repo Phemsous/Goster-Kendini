@@ -41,7 +41,11 @@ body { background-color: #121212; color: white; }
                             <h5 class="card-title fw-bold mb-0">{{ talent.title }}</h5>
                             <small class="text-danger fw-bold">{{ talent.get_category_display }}</small>
                         </div>
-                        <span class="badge bg-secondary">@{{ talent.artist.username }}</span>
+                        <a href="{% url 'public_profile' talent.artist.id %}" 
+                             class="badge bg-secondary text-decoration-none"
+                             onclick="event.stopPropagation();">
+                               @{{ talent.artist.username }}
+                        </a>
                     </div>
                     <hr class="border-secondary">
                     <p class="card-text"><strong>Deneyim:</strong><br>{{ talent.experience|truncatewords:30 }}</p>
