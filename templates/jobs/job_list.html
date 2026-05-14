@@ -36,7 +36,11 @@ body { background-color: #121212; color: white; }
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <h5 class="card-title fw-bold text-danger">{{ job.title }}</h5>
-                        <span class="badge bg-secondary">Yapımcı: {{ job.producer.username }}</span>
+                        <a href="{% url 'public_profile' job.producer.id %}" 
+                             class="badge bg-secondary text-decoration-none"
+                             onclick="event.stopPropagation();">
+                              Yapımcı: {{ job.producer.username }}
+                        </a>
                     </div>
                     <p class="card-text mt-3">{{ job.description|truncatewords:30 }}</p>
                 </div>
