@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Q
 
 from .forms import TalentListingForm
 from .services import create_talent_ad_service
@@ -32,5 +33,24 @@ def create_talent_ad(request):
 
 
 def talent_list(request):
+    query = request.GET.get('q', '')
+    category = request.GET.get('category', '')
+
     talents = get_active_talents()
-    return render(request, 'talents/talent_list.html', {'talents': talents})
+
+    if query:
+        talents = talents.filter(
+            Q(title__icontains=query) |
+            Q(experience__icontains=query) |
+            Q(skills__icontains=query) |
+            Q(artist__username__icontains=query)
+        )
+
+    if category:
+        talents = talents.filter(category=category)
+
+    return render(request, 'talents/talent_list.html', {
+        'talents': talents,
+        'query': query,
+        'category': category,
+    })

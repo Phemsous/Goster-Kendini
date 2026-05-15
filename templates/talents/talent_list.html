@@ -13,15 +13,15 @@ body { background-color: #121212; color: white; }
             <h1 class="display-5 fw-bold mb-4 text-danger">Yetenekleri Keşfet</h1>
             <form method="GET" action="/talents/" class="row g-2 shadow-sm p-3 rounded" style="background:#1a1a1a;">
                 <div class="col-md-7">
-                    <input class="form-control" style="background:#252525; border:1px solid #444; color:white;" type="search" name="q" placeholder="Yetenek, isim veya deneyim ara..." value="{{ query|default:'' }}">
+                    <input class="form-control" style="background:#252525; border:1px solid #444; color:white;" type="search" name="q" placeholder="Yetenek, isim veya deneyim ara..." value="{{ query }}">
                 </div>
                 <div class="col-md-3">
                     <select name="category" class="form-select" style="background:#252525; border:1px solid #444; color:white;">
                         <option value="">Tüm Kategoriler</option>
-                        <option value="actor">Oyuncu</option>
-                        <option value="musician">Müzisyen</option>
-                        <option value="dancer">Dansçı</option>
-                        <option value="model">Model</option>
+                        <option value="actor" {% if category == 'actor' %}selected{% endif %}>Oyuncu</option>
+                        <option value="musician" {% if category == 'musician' %}selected{% endif %}>Müzisyen</option>
+                        <option value="dancer" {% if category == 'dancer' %}selected{% endif %}>Dansçı</option>
+                        <option value="model" {% if category == 'model' %}selected{% endif %}>Model</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -41,10 +41,10 @@ body { background-color: #121212; color: white; }
                             <h5 class="card-title fw-bold mb-0">{{ talent.title }}</h5>
                             <small class="text-danger fw-bold">{{ talent.get_category_display }}</small>
                         </div>
-                        <a href="{% url 'public_profile' talent.artist.id %}" 
-                             class="badge bg-secondary text-decoration-none"
-                             onclick="event.stopPropagation();">
-                               @{{ talent.artist.username }}
+                        <a href="{% url 'public_profile' talent.artist.id %}"
+                           class="badge bg-secondary text-decoration-none"
+                           onclick="event.stopPropagation();">
+                            @{{ talent.artist.username }}
                         </a>
                     </div>
                     <hr class="border-secondary">
