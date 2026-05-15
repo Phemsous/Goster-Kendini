@@ -11,17 +11,38 @@ body { background-color: #121212; color: white; }
 .user-card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; transition: 0.3s; text-decoration: none; color: white; display: block; }
 .user-card:hover { border-color: #dc3545; transform: translateY(-3px); color: white; }
 .avatar { width: 55px; height: 55px; background: #dc3545; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; flex-shrink: 0; }
+.filter-btn { background: #1a1a1a; border: 1px solid #444; color: #aaa; border-radius: 20px; padding: 6px 18px; font-size: 0.85rem; cursor: pointer; transition: 0.2s; text-decoration: none; }
+.filter-btn:hover { border-color: #dc3545; color: white; }
+.filter-btn.active { background: #dc3545; border-color: #dc3545; color: white; font-weight: bold; }
 {% endblock %}
 
 {% block content %}
 <div class="container mt-5" style="max-width: 700px;">
     <h3 class="fw-bold mb-4">🔍 Kullanıcı Ara</h3>
-    <form method="GET" class="d-flex mb-5">
+
+    <form method="GET" class="d-flex mb-3">
         <input type="text" name="q" value="{{ query }}" class="form-control search-input" placeholder="Kullanıcı adı ara...">
+        {% if selected_role %}
+            <input type="hidden" name="role" value="{{ selected_role }}">
+        {% endif %}
         <button type="submit" class="btn-search">Ara</button>
     </form>
-    {% if query %}
+
+    <div class="d-flex gap-2 mb-5">
+        <a href="?q={{ query }}" class="filter-btn {% if not selected_role %}active{% endif %}">
+            Tümü
+        </a>
+        <a href="?q={{ query }}&role=artist" class="filter-btn {% if selected_role == 'artist' %}active{% endif %}">
+            🎨 Sanatçılar
+        </a>
+        <a href="?q={{ query }}&role=producer" class="filter-btn {% if selected_role == 'producer' %}active{% endif %}">
+            🎬 Yapımcılar
+        </a>
+    </div>
+
+    {% if query or selected_role %}
         {% if users %}
+            <p class="text-muted small mb-3">{{ users|length }} kullanıcı bulundu</p>
             {% for user in users %}
             <a href="{% url 'public_profile' user.id %}" class="user-card p-3 mb-3 d-flex align-items-center gap-3">
                 <div class="avatar">{{ user.username|first|upper }}</div>
@@ -36,7 +57,13 @@ body { background-color: #121212; color: white; }
             </a>
             {% endfor %}
         {% else %}
-            <p class="text-muted text-center py-4">"{{ query }}" ile eşleşen kullanıcı bulunamadı.</p>
+            <p class="text-muted text-center py-4">
+                {% if query %}"{{ query }}" ile eşleşen{% endif %}
+                {% if selected_role %}
+                    {% if selected_role == 'artist' %}sanatçı{% else %}yapımcı{% endif %}
+                {% endif %}
+                kullanıcı bulunamadı.
+            </p>
         {% endif %}
     {% endif %}
 </div>

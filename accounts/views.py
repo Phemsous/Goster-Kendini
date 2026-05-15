@@ -66,20 +66,29 @@ def profile_edit(request):
     return render(request, 'accounts/profile_edit.html')
 
 
-# --- YENİ: Kullanıcı arama ---
 @login_required
 def user_search(request):
     query = request.GET.get('q', '')
-    users = []
+    role = request.GET.get('role', '')
+
+    users = User.objects.exclude(id=request.user.id)
+
     if query:
-        users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)
+        users = users.filter(username__icontains=query)
+
+    if role in ('artist', 'producer'):
+        users = users.filter(role=role)
+
+    if not query and not role:
+        users = User.objects.none()
+
     return render(request, 'accounts/user_search.html', {
         'users': users,
-        'query': query
+        'query': query,
+        'selected_role': role,
     })
 
 
-# --- YENİ: Başka kullanıcının profili ---
 @login_required
 def public_profile(request, user_id):
     other_user = get_object_or_404(User, id=user_id)
