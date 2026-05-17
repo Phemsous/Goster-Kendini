@@ -7,36 +7,40 @@ body { background-color: #121212; color: white; }
 {% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row mb-5">
-        <div class="col-md-8 mx-auto text-center">
-            <h1 class="display-5 fw-bold mb-4 text-danger">Yetenekleri Keşfet</h1>
-            <form method="GET" action="/talents/" class="row g-2 shadow-sm p-3 rounded" style="background:#1a1a1a;">
-                <div class="col-md-7">
-                    <input class="form-control" style="background:#252525; border:1px solid #444; color:white;" type="search" name="q" placeholder="Yetenek, isim veya deneyim ara..." value="{{ query }}">
-                </div>
-                <div class="col-md-3">
-                    <select name="category" class="form-select" style="background:#252525; border:1px solid #444; color:white;">
-                        <option value="">Tüm Kategoriler</option>
-                        <option value="actor" {% if category == 'actor' %}selected{% endif %}>Oyuncu</option>
-                        <option value="musician" {% if category == 'musician' %}selected{% endif %}>Müzisyen</option>
-                        <option value="dancer" {% if category == 'dancer' %}selected{% endif %}>Dansçı</option>
-                        <option value="model" {% if category == 'model' %}selected{% endif %}>Model</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-danger w-100" type="submit">Filtrele</button>
+<div class="container mt-4 mt-md-5">
+    <div class="row mb-4">
+        <div class="col-12 col-md-10 col-lg-8 mx-auto text-center">
+            <h1 class="fs-2 fw-bold mb-4 text-danger">Yetenekleri Keşfet</h1>
+            <form method="GET" action="/talents/" class="shadow-sm p-3 rounded" style="background:#1a1a1a;">
+                <div class="row g-2">
+                    <div class="col-12 col-md-7">
+                        <input class="form-control" style="background:#252525; border:1px solid #444; color:white;"
+                               type="search" name="q" placeholder="Yetenek, isim veya deneyim ara..." value="{{ query }}">
+                    </div>
+                    <div class="col-8 col-md-3">
+                        <select name="category" class="form-select" style="background:#252525; border:1px solid #444; color:white;">
+                            <option value="">Tüm Kategoriler</option>
+                            <option value="actor" {% if category == 'actor' %}selected{% endif %}>Oyuncu</option>
+                            <option value="musician" {% if category == 'musician' %}selected{% endif %}>Müzisyen</option>
+                            <option value="dancer" {% if category == 'dancer' %}selected{% endif %}>Dansçı</option>
+                            <option value="model" {% if category == 'model' %}selected{% endif %}>Model</option>
+                        </select>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <button class="btn btn-danger w-100" type="submit">Ara</button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
+
     <div class="row">
         <h3 class="mb-4">Kayıtlı Sanatçılar</h3>
         {% for talent in talents %}
-        <div class="col-md-6 mb-4">
+        <div class="col-12 col-md-6 mb-4">
             <div class="card h-100 shadow-sm border-0 border-start border-danger border-5">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
                         <div>
                             <h5 class="card-title fw-bold mb-0">{{ talent.title }}</h5>
                             <small class="text-danger fw-bold">{{ talent.get_category_display }}</small>
@@ -48,7 +52,7 @@ body { background-color: #121212; color: white; }
                         </a>
                     </div>
                     <hr class="border-secondary">
-                    <p class="card-text"><strong>Deneyim:</strong><br>{{ talent.experience|truncatewords:30 }}</p>
+                    <p class="card-text small"><strong>Deneyim:</strong><br>{{ talent.experience|truncatewords:30 }}</p>
                     <p class="card-text text-muted small"><strong>Yetenekler:</strong> {{ talent.skills }}</p>
                 </div>
                 <div class="card-footer border-0 text-muted small" style="background:#1a1a1a;">
@@ -58,7 +62,7 @@ body { background-color: #121212; color: white; }
         </div>
         {% empty %}
         <div class="col-12 text-center py-5">
-            <p class="text-muted fs-4">Aramanızla eşleşen bir sanatçı bulunamadı.</p>
+            <p class="text-muted fs-5">Aramanızla eşleşen bir sanatçı bulunamadı.</p>
             <a href="/talents/" class="btn btn-outline-danger">Tüm Listeyi Gör</a>
         </div>
         {% endfor %}
