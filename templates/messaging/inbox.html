@@ -4,21 +4,21 @@
 {% block extra_style %}
 body { background-color: #121212; color: white; }
 .conv-card { background-color: #1a1a1a; border: 1px solid #333; border-radius: 12px; transition: 0.3s; text-decoration: none; color: white; display: block; }
-.conv-card:hover { border-color: #dc3545; transform: translateX(5px); color: white; }
-.avatar { width: 50px; height: 50px; background-color: #dc3545; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; flex-shrink: 0; }
-.unread-badge { background: #dc3545; color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+.conv-card:hover { border-color: #dc3545; transform: translateX(3px); color: white; }
+.avatar { width: 48px; height: 48px; background-color: #dc3545; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; }
+.unread-badge { background: #dc3545; color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0; }
 {% endblock %}
 
 {% block content %}
-<div class="container mt-5" style="max-width: 700px;">
+<div class="container mt-4 mt-md-5" style="max-width: 700px;">
     <h3 class="fw-bold mb-4">💬 Mesajlarım</h3>
     {% if conversations %}
         {% for conv in conversations %}
         <a href="{% url 'conversation' conv.user.id %}" class="conv-card p-3 mb-3 d-flex align-items-center gap-3">
             <div class="avatar">{{ conv.user.username|first|upper }}</div>
-            <div class="flex-grow-1">
+            <div class="flex-grow-1 overflow-hidden">
                 <div class="fw-bold">{{ conv.user.username }}</div>
-                <div class="text-muted small">{{ conv.last_message.content|truncatechars:50 }}</div>
+                <div class="text-muted small text-truncate">{{ conv.last_message.content|truncatechars:50 }}</div>
             </div>
             {% if conv.unread_count > 0 %}
             <div class="unread-badge">{{ conv.unread_count }}</div>
