@@ -9,7 +9,7 @@
         .navbar { background-color: #1a1a1a; }
         .logout-link { color: #dc3545; text-decoration: none; transition: 0.3s; }
         .logout-link:hover { color: #ff6b6b; }
-        .nav-profile-link { color: white; text-decoration: none; margin-right: 15px; font-weight: bold; transition: 0.3s; }
+        .nav-profile-link { color: white; text-decoration: none; font-weight: bold; transition: 0.3s; }
         .nav-profile-link:hover { color: #dc3545; }
         {% block extra_style %}{% endblock %}
     </style>
@@ -34,20 +34,21 @@
                     <a class="nav-link d-flex align-items-center gap-1" href="{% url 'inbox' %}">
                         💬 Mesajlar
                         {% if unread_message_count > 0 %}
-                        <span style="width:8px; height:8px; background:#dc3545; border-radius:50%; display:inline-block;"></span>
+                        <span style="width:8px;height:8px;background:#dc3545;border-radius:50%;display:inline-block;"></span>
                         {% endif %}
                     </a>
                 </li>
                 {% endif %}
             </ul>
-            <div class="d-flex align-items-center">
+            <!-- Auth bölümü collapse içinde → mobilde hamburger menüsüne girer -->
+            <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2 mt-3 mt-lg-0">
                 {% if user.is_authenticated %}
-                    <span class="text-white me-3">Hoş geldin, <strong>{{ user.username }}</strong>!</span>
+                    <span class="text-white small">Hoş geldin, <strong>{{ user.username }}</strong>!</span>
                     <a href="{% url 'profile_detail' %}" class="nav-profile-link">Profilim</a>
                     <a href="{% url 'logout' %}" class="logout-link fw-bold">Çıkış Yap</a>
                 {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-outline-light me-2">Giriş Yap</a>
-                    <a href="{% url 'register' %}" class="btn btn-danger">Kayıt Ol</a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Giriş Yap</a>
+                    <a href="{% url 'register' %}" class="btn btn-danger btn-sm">Kayıt Ol</a>
                 {% endif %}
             </div>
         </div>
