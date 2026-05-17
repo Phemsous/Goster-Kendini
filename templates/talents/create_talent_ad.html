@@ -6,26 +6,24 @@ body { background-color: #121212; color: white; }
 label { color: white !important; }
 .form-control, .form-select { color: white !important; background-color: #252525; border: 1px solid #444; }
 .form-control::placeholder { color: #aaa; }
-.form-control:focus { background-color: #2d2d2d; border-color: #dc3545; color: white; box-shadow: none; }
+.form-control:focus, .form-select:focus { background-color: #2d2d2d; border-color: #dc3545; color: white; box-shadow: none; }
 {% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container my-4 my-md-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow border-0" style="background:#1a1a1a; border: 1px solid #333 !important;">
-                <div class="card-body p-5">
-                    <h2 class="text-center mb-4 fw-bold text-danger">YETENEK KARTINI OLUŞTUR</h2>
-                    <p class="text-muted text-center mb-4">Yapımcıların seni keşfetmesi için yeteneklerini ve deneyimlerini detaylandır.</p>
-                    <form method="POST">
-                        {% csrf_token %}
-                        <div class="mb-3">{{ form.as_p }}</div>
-                        <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-danger btn-lg">İlanı Yayınla</button>
-                            <a href="/talents/" class="btn btn-outline-secondary">Vazgeç</a>
-                        </div>
-                    </form>
-                </div>
+        <div class="col-12 col-md-10 col-lg-8">
+            <div class="card shadow border-0 p-3 p-md-5" style="background:#1a1a1a; border: 1px solid #333 !important;">
+                <h2 class="text-center mb-3 fw-bold text-danger">YETENEK KARTINI OLUŞTUR</h2>
+                <p class="text-muted text-center mb-4">Yapımcıların seni keşfetmesi için yeteneklerini detaylandır.</p>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">{{ form.as_p }}</div>
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-danger btn-lg">İlanı Yayınla</button>
+                        <a href="/talents/" class="btn btn-outline-secondary">Vazgeç</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
