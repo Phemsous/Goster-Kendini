@@ -3,19 +3,19 @@
 
 {% block extra_style %}
 body { background-color: #121212; color: white; }
-.login-card { background-color: #1a1a1a; border: 1px solid #333; border-radius: 15px; max-width: 480px; margin: 80px auto; }
+.login-card { background-color: #1a1a1a; border: 1px solid #333; border-radius: 15px; max-width: 480px; margin: 20px auto; }
 .form-control { background-color: #252525; border: 1px solid #444; color: white; padding: 12px; }
 .form-control:focus { background-color: #2d2d2d; border-color: #dc3545; color: white; box-shadow: none; }
 .form-control::placeholder { color: #aaa; }
-label { color: white; }
+label { color: white !important; }
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="login-card p-5 shadow-lg">
+<div class="container py-4">
+    <div class="login-card p-3 p-md-5 shadow-lg">
         <div class="text-center mb-4">
             <h2 class="fw-bold">Hoş Geldin</h2>
-            <p class="text-muted">Hesabına giriş yap</p>
+            <p class="text-muted small">Hesabına giriş yap</p>
         </div>
         <form method="POST">
             {% csrf_token %}
@@ -23,7 +23,9 @@ label { color: white; }
             <button type="submit" class="btn btn-danger w-100 fw-bold py-3 mt-3">Giriş Yap</button>
         </form>
         <hr class="border-secondary my-4">
-        <p class="text-center text-muted">Hesabın yok mu? <a href="{% url 'register' %}" class="text-danger fw-bold text-decoration-none">Kayıt Ol</a></p>
+        <p class="text-center text-muted small">Hesabın yok mu?
+            <a href="{% url 'register' %}" class="text-danger fw-bold text-decoration-none">Kayıt Ol</a>
+        </p>
     </div>
 </div>
 {% endblock %}
