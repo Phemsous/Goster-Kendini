@@ -6,82 +6,82 @@ body { background-color: #121212; color: white; }
 .profile-card { background-color: #1a1a1a; border: 1px solid #333; border-radius: 15px; }
 .video-card { background-color: #1a1a1a; border: 1px solid #333; transition: 0.3s; }
 .video-card:hover { transform: translateY(-5px); border-color: #dc3545; }
-.avatar-circle { width: 100px; height: 100px; background-color: #dc3545; color: white; font-size: 40px; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 auto 20px; }
+.avatar-circle { width: 80px; height: 80px; background-color: #dc3545; color: white; font-size: 32px; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 auto 15px; }
 {% endblock %}
 
 {% block content %}
-<div class="container my-5">
+<div class="container my-4 my-md-5">
     <div class="row">
-        <div class="col-md-4">
-            <div class="profile-card p-4 text-center shadow">
+        <!-- Profil kartı: mobilde önce gelir, tam genişlik -->
+        <div class="col-12 col-md-4 mb-4">
+            <div class="profile-card p-3 p-md-4 text-center shadow">
                 <div class="avatar-circle">{{ user.username|first|upper }}</div>
-                <h3 class="fw-bold">{{ user.username }}</h3>
+                <h4 class="fw-bold">{{ user.username }}</h4>
                 <p class="text-muted small">@{{ user.username }}</p>
                 <hr class="border-secondary">
-                <div class="text-start">
-                    <p><strong>Rol:</strong> {% if user.role == 'artist' %}Sanatçı{% elif user.role == 'producer' %}Yapımcı{% else %}Üye{% endif %}</p>
-                    <p><strong>E-posta:</strong> {{ user.email }}</p>
+                <div class="text-start small">
+                    <p class="mb-1"><strong>Rol:</strong>
+                        {% if user.role == 'artist' %}Sanatçı{% elif user.role == 'producer' %}Yapımcı{% else %}Üye{% endif %}
+                    </p>
+                    <p class="mb-0"><strong>E-posta:</strong> {{ user.email }}</p>
                 </div>
                 <a href="{% url 'profile_edit' %}" class="btn btn-outline-light btn-sm w-100 mt-3">Profili Düzenle</a>
             </div>
         </div>
-        <div class="col-md-8">
-            <h3 class="fw-bold mb-4"><span class="text-danger me-2">❤️</span>Favori Videolarım</h3>
+
+        <div class="col-12 col-md-8">
+            <h4 class="fw-bold mb-3"><span class="text-danger me-2">❤️</span>Favori Videolarım</h4>
             <div class="row">
                 {% for video in favorite_videos %}
-                <div class="col-md-6 mb-4">
-                    <div class="card video-card h-100 text-white border-0">
-                        <div class="bg-dark d-flex align-items-center justify-content-center" style="height:180px;">
-                            <img src="{{ video.get_thumbnail_url }}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">
+                <div class="col-6 col-lg-6 mb-3">
+                    <div class="card video-card h-100 text-white border-0" style="cursor:pointer;"
+                         onclick="window.location.href='/videos/{{ video.id }}/'">
+                        <div style="height:130px; overflow:hidden;">
+                            <img src="{{ video.get_thumbnail_url }}" style="width:100%;height:100%;object-fit:cover;"
+                                 onerror="this.style.display='none'">
                         </div>
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold">{{ video.title }}</h5>
-                            <p class="card-text text-muted small">Kategori: {{ video.category }}</p>
-                            <a href="/videos/{{ video.id }}/" class="btn btn-danger btn-sm w-100 fw-bold">ŞİMDİ İZLE</a>
+                        <div class="card-body p-2">
+                            <h6 class="card-title fw-bold small mb-1">{{ video.title }}</h6>
+                            <p class="card-text text-muted" style="font-size:0.75rem;">{{ video.category }}</p>
                         </div>
                     </div>
                 </div>
                 {% empty %}
-                <div class="col-12 text-center py-5">
-                    <p class="text-muted">Henüz hiçbir videoyu favorilere eklemedin.</p>
-                    <a href="/" class="btn btn-outline-danger">Kayıtları Keşfet</a>
+                <div class="col-12 text-center py-4">
+                    <p class="text-muted small">Henüz favorin yok.</p>
+                    <a href="/" class="btn btn-outline-danger btn-sm">Keşfet</a>
                 </div>
                 {% endfor %}
             </div>
 
-            <h3 class="fw-bold mb-4 mt-4"><span class="text-danger me-2">🎬</span>Videolarım</h3>
+            <h4 class="fw-bold mb-3 mt-4"><span class="text-danger me-2">🎬</span>Videolarım</h4>
             <div class="row">
                 {% for video in my_videos %}
-                <div class="col-md-6 mb-4">
-                    <div class="card video-card h-100 text-white border-0"
-                         onclick="window.location.href='/videos/{{ video.id }}/'"
-                         style="cursor:pointer;">
-                        <div class="bg-dark d-flex align-items-center justify-content-center" style="height:180px; overflow:hidden;">
-                            <img src="{{ video.get_thumbnail_url }}"
-                                 style="width:100%;height:100%;object-fit:cover;"
+                <div class="col-6 col-lg-6 mb-3">
+                    <div class="card video-card h-100 text-white border-0" style="cursor:pointer;"
+                         onclick="window.location.href='/videos/{{ video.id }}/'">
+                        <div style="height:130px; overflow:hidden;">
+                            <img src="{{ video.get_thumbnail_url }}" style="width:100%;height:100%;object-fit:cover;"
                                  onerror="this.style.display='none'">
                         </div>
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold">{{ video.title }}</h5>
-                            <p class="card-text text-muted small">Kategori: {{ video.category }}</p>
-                            <div class="d-flex gap-3 text-muted small mb-3">
+                        <div class="card-body p-2">
+                            <h6 class="card-title fw-bold small mb-1">{{ video.title }}</h6>
+                            <div class="d-flex gap-2 text-muted mb-1" style="font-size:0.75rem;">
                                 <span>👍 {{ video.like_count }}</span>
                                 <span>💬 {{ video.comments.count }}</span>
                             </div>
-                            <a href="/videos/{{ video.id }}/" class="btn btn-danger btn-sm w-100 fw-bold">ŞİMDİ İZLE</a>
                         </div>
                     </div>
                 </div>
                 {% empty %}
-                <div class="col-12 text-center py-5">
-                    <p class="text-muted">Henüz hiç video yüklemedin.</p>
+                <div class="col-12 text-center py-4">
+                    <p class="text-muted small">Henüz video yüklemedin.</p>
                     {% if user.role == 'artist' %}
-                    <a href="{% url 'upload_video' %}" class="btn btn-outline-danger">Video Yükle</a>
+                    <a href="{% url 'upload_video' %}" class="btn btn-outline-danger btn-sm">Video Yükle</a>
                     {% endif %}
                 </div>
                 {% endfor %}
             </div>
-
         </div>
     </div>
 </div>
