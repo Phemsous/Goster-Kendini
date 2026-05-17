@@ -7,45 +7,27 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .navbar { background-color: #1a1a1a; }
-        .hero-section { 
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=2070&auto=format&fit=crop'); 
-            background-size: cover; color: white; padding: 100px 0; 
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover; color: white; padding: 80px 0;
+        }
+        @media (max-width: 576px) {
+            .hero-section { padding: 50px 0; }
+            .hero-section h1 { font-size: 2rem; }
+            .hero-section p { font-size: 1rem; }
         }
         .logout-link { color: #dc3545; text-decoration: none; transition: 0.3s; }
         .logout-link:hover { color: #ff6b6b; }
-        .nav-profile-link { color: white; text-decoration: none; margin-right: 15px; font-weight: bold; transition: 0.3s; }
+        .nav-profile-link { color: white; text-decoration: none; font-weight: bold; transition: 0.3s; }
         .nav-profile-link:hover { color: #dc3545; }
         .video-card { transition: transform 0.3s; border: 1px solid #eee; cursor: pointer; }
         .video-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important; }
-        .thumbnail-wrapper {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%;
-            background: #000;
-            overflow: hidden;
-        }
-        .thumbnail-wrapper img {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            transition: opacity 0.3s;
-        }
+        .thumbnail-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #000; overflow: hidden; }
+        .thumbnail-wrapper img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s; }
         .video-card:hover .thumbnail-wrapper img { opacity: 0.75; }
-        .play-btn {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px; height: 60px;
-            background: rgba(220, 53, 69, 0.9);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            transition: transform 0.2s, background 0.2s;
-            pointer-events: none;
-        }
+        .play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: rgba(220, 53, 69, 0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: transform 0.2s, background 0.2s; pointer-events: none; }
         .video-card:hover .play-btn { transform: translate(-50%, -50%) scale(1.15); background: #dc3545; }
         .play-btn svg { width: 24px; height: 24px; fill: white; margin-left: 4px; }
-        .modal-body .ratio { border-radius: 8px; overflow: hidden; }
         .modal-content { background: #1a1a1a; border: 1px solid #333; }
         .modal-header { border-bottom: 1px solid #333; }
         .modal-title { color: white; }
@@ -62,30 +44,21 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="/">Ana Sayfa</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'video_explore' %}">🎬 Videolar</a></li>
                     <li class="nav-item"><a class="nav-link" href="/jobs/">İş İlanları</a></li>
                     <li class="nav-item"><a class="nav-link" href="/talents/">Yetenek Keşfi</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'user_search' %}">🔍 Kullanıcılar</a></li>
-                    
                     {% if user.is_authenticated %}
-                    <li class="nav-item">
-                         <a class="nav-link d-flex align-items-center gap-1" href="{% url 'inbox' %}">
-                            💬 Mesajlar
-                            {% if unread_message_count > 0 %}
-                                <span style="width:8px; height:8px; background:#dc3545; border-radius:50%; display:inline-block;"></span>
-                            {% endif %}
-                         </a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'inbox' %}">💬 Mesajlar</a></li>
                     {% endif %}
                 </ul>
-                <div class="d-flex align-items-center">
+                <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2 mt-3 mt-lg-0">
                     {% if user.is_authenticated %}
-                        <span class="text-white me-3">Hoş geldin, <strong>{{ user.username }}</strong>!</span>
+                        <span class="text-white small">Hoş geldin, <strong>{{ user.username }}</strong>!</span>
                         <a href="{% url 'profile_detail' %}" class="nav-profile-link">Profilim</a>
                         <a href="{% url 'logout' %}" class="logout-link fw-bold">Çıkış Yap</a>
                     {% else %}
-                        <a href="{% url 'login' %}" class="btn btn-outline-light me-2">Giriş Yap</a>
-                        <a href="{% url 'register' %}" class="btn btn-danger">Kayıt Ol</a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Giriş Yap</a>
+                        <a href="{% url 'register' %}" class="btn btn-danger btn-sm">Kayıt Ol</a>
                     {% endif %}
                 </div>
             </div>
@@ -95,9 +68,9 @@
     {% if messages %}
     <div class="container mt-3">
         {% for message in messages %}
-            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
                 {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         {% endfor %}
     </div>
@@ -105,55 +78,51 @@
 
     <header class="hero-section text-center">
         <div class="container">
-            <h1 class="display-3 fw-bold mb-4">Sahnede Sıra Sende!</h1>
-            <p class="lead mb-5">Videonuzu yükleyin, yetenek ilanı verin veya size uygun iş ilanlarına başvurun.</p>
-            <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <h1 class="display-3 fw-bold mb-3">Sahnede Sıra Sende!</h1>
+            <p class="lead mb-4">Videonuzu yükleyin, yetenek ilanı verin veya size uygun iş ilanlarına başvurun.</p>
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
                 {% if user.is_authenticated %}
                     {% if user.role == 'artist' %}
-                        <a href="{% url 'upload_video' %}" class="btn btn-danger btn-lg px-4 py-3 fw-bold">VİDEO YÜKLE</a>
-                        <a href="/talents/create/" class="btn btn-outline-light btn-lg px-4 py-3 fw-bold">Yetenek İlanı Ver</a>
+                        <a href="{% url 'upload_video' %}" class="btn btn-danger btn-lg px-4 fw-bold">VİDEO YÜKLE</a>
+                        <a href="/talents/create/" class="btn btn-outline-light btn-lg px-4 fw-bold">Yetenek İlanı Ver</a>
                     {% elif user.role == 'producer' %}
-                        <a href="{% url 'create_job' %}" class="btn btn-danger btn-lg px-4 py-3 fw-bold">İLAN OLUŞTUR</a>
-                        <a href="/talents/" class="btn btn-primary btn-lg px-4 py-3 fw-bold shadow">SANATÇI KEŞFET</a>
+                        <a href="{% url 'create_job' %}" class="btn btn-danger btn-lg px-4 fw-bold">İLAN OLUŞTUR</a>
+                        <a href="/talents/" class="btn btn-primary btn-lg px-4 fw-bold">SANATÇI KEŞFET</a>
                     {% endif %}
                 {% else %}
-                    <a href="{% url 'register' %}" class="btn btn-danger btn-lg px-4 py-3 fw-bold shadow">Kayıt Ol</a>
+                    <a href="{% url 'register' %}" class="btn btn-danger btn-lg px-4 fw-bold">Kayıt Ol</a>
                 {% endif %}
-                <a href="/jobs/" class="btn btn-light btn-lg px-4 py-3 fw-bold text-dark">İLANLARI GÖR</a>
+                <a href="/jobs/" class="btn btn-light btn-lg px-4 fw-bold text-dark">İLANLARI GÖR</a>
             </div>
         </div>
     </header>
 
-    <main class="container my-5">
+    <main class="container my-4 my-md-5">
         <h2 class="mb-4 fw-bold">Öne Çıkan Yetenekler</h2>
         {% csrf_token %}
         <div class="row">
             {% for video in videos %}
-            <div class="col-md-4 mb-4">
+            <div class="col-6 col-md-4 mb-4">
                 <div class="card h-100 shadow-sm border-0 video-card"
                      onclick="window.location.href='/videos/{{ video.id }}/'">
-
                     <div class="thumbnail-wrapper">
-                        <img src="{{ video.get_thumbnail_url }}"
-                             alt="{{ video.title }}"
+                        <img src="{{ video.get_thumbnail_url }}" alt="{{ video.title }}"
                              onerror="this.src='https://via.placeholder.com/480x270/1a1a1a/dc3545?text=Video'">
                         <div class="play-btn">
                             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                         </div>
                     </div>
-
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold text-dark">{{ video.title }}</h5>
-                        <p class="card-text text-muted small mb-3">
-                            Yükleyen: <strong>{{ video.user.username }}</strong>
+                    <div class="card-body p-2 p-md-3">
+                        <h6 class="card-title fw-bold text-dark mb-1">{{ video.title }}</h6>
+                        <p class="card-text text-muted small mb-2">
+                            <strong>{{ video.user.username }}</strong>
                             <span class="badge bg-light text-secondary ms-1">{{ video.category }}</span>
                         </p>
                         <button onclick="event.stopPropagation(); toggleFavorite({{ video.id }})"
                                 id="fav-btn-{{ video.id }}"
                                 data-url="{% url 'favorite_video' video.id %}"
                                 class="btn btn-sm {% if request.user in video.favorites.all %}btn-danger{% else %}btn-outline-danger{% endif %} w-100 fw-bold">
-                            {% if request.user in video.favorites.all %}❤️ Favorilerden Çıkar
-                            {% else %}🤍 Favorilere Ekle{% endif %}
+                            {% if request.user in video.favorites.all %}❤️ Çıkar{% else %}🤍 Favori{% endif %}
                         </button>
                     </div>
                 </div>
@@ -173,12 +142,9 @@
                 </div>
                 <div class="modal-body p-3">
                     <div class="ratio ratio-16x9">
-                        <iframe id="videoModalIframe"
-                                src=""
-                                title="Video"
+                        <iframe id="videoModalIframe" src="" title="Video"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowfullscreen>
-                        </iframe>
+                                allowfullscreen></iframe>
                     </div>
                 </div>
             </div>
@@ -187,42 +153,29 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    function openVideoModal(embedUrl, title) {
-        document.getElementById('videoModalTitle').textContent = title;
-        document.getElementById('videoModalIframe').src = embedUrl + '?autoplay=1&rel=0';
-        const modal = new bootstrap.Modal(document.getElementById('videoModal'));
-        modal.show();
-    }
-
     document.getElementById('videoModal').addEventListener('hidden.bs.modal', function () {
         document.getElementById('videoModalIframe').src = '';
     });
-
     function toggleFavorite(videoId) {
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         const btn = document.getElementById(`fav-btn-${videoId}`);
         const url = btn.getAttribute('data-url');
         fetch(url, {
             method: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken,
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            headers: { 'X-CSRFToken': csrfToken, 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
         })
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
             if (data.is_favorited) {
-                btn.innerHTML = '❤️ Favorilerden Çıkar';
+                btn.innerHTML = '❤️ Çıkar';
                 btn.classList.remove('btn-outline-danger');
                 btn.classList.add('btn-danger');
             } else {
-                btn.innerHTML = '🤍 Favorilere Ekle';
+                btn.innerHTML = '🤍 Favori';
                 btn.classList.remove('btn-danger');
                 btn.classList.add('btn-outline-danger');
             }
-        })
-        .catch(error => console.error('Hata:', error));
+        });
     }
     </script>
 </body>
