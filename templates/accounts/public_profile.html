@@ -4,18 +4,18 @@
 {% block extra_style %}
 body { background-color: #121212; color: white; }
 .profile-card { background: #1a1a1a; border: 1px solid #333; border-radius: 15px; }
-.avatar { width: 100px; height: 100px; background: #dc3545; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: bold; margin: 0 auto 15px; }
-.video-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; transition: 0.3s; }
+.avatar { width: 80px; height: 80px; background: #dc3545; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; margin: 0 auto 15px; }
+.video-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; transition: 0.3s; cursor: pointer; }
 .video-card:hover { border-color: #dc3545; transform: translateY(-3px); }
 .thumbnail-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #000; overflow: hidden; border-radius: 10px 10px 0 0; }
 .thumbnail-wrapper img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
 {% endblock %}
 
 {% block content %}
-<div class="container my-5">
+<div class="container my-4 my-md-5">
     <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="profile-card p-4 text-center">
+        <div class="col-12 col-md-4 mb-4">
+            <div class="profile-card p-3 p-md-4 text-center">
                 <div class="avatar">{{ other_user.username|first|upper }}</div>
                 <h4 class="fw-bold">{{ other_user.username }}</h4>
                 <p class="text-muted small">
@@ -24,26 +24,27 @@ body { background-color: #121212; color: white; }
                     {% else %}Üye{% endif %}
                 </p>
                 <hr class="border-secondary">
-                <a href="/messaging/{{ other_user.id }}/" class="btn btn-danger w-100 fw-bold mt-2">💬 Mesaj Gönder</a>
+                <a href="/messaging/{{ other_user.id }}/" class="btn btn-danger w-100 fw-bold">💬 Mesaj Gönder</a>
             </div>
         </div>
-        <div class="col-md-8">
+        <div class="col-12 col-md-8">
             <h5 class="fw-bold mb-3">{{ other_user.username }}'in Videoları</h5>
             <div class="row">
                 {% for video in videos %}
-                <div class="col-md-6 mb-4">
+                <div class="col-6 col-lg-6 mb-4">
                     <div class="video-card" onclick="window.location.href='/videos/{{ video.id }}/'">
                         <div class="thumbnail-wrapper">
-                            <img src="{{ video.get_thumbnail_url }}" alt="{{ video.title }}" onerror="this.src='https://via.placeholder.com/480x270/1a1a1a/dc3545?text=Video'">
+                            <img src="{{ video.get_thumbnail_url }}" alt="{{ video.title }}"
+                                 onerror="this.src='https://via.placeholder.com/480x270/1a1a1a/dc3545?text=Video'">
                         </div>
-                        <div class="p-3">
-                            <h6 class="fw-bold">{{ video.title }}</h6>
+                        <div class="p-2">
+                            <h6 class="fw-bold small mb-1">{{ video.title }}</h6>
                             <span class="badge bg-secondary">{{ video.category }}</span>
                         </div>
                     </div>
                 </div>
                 {% empty %}
-                <p class="text-muted">Bu kullanıcının henüz videosu yok.</p>
+                <p class="text-muted small">Bu kullanıcının henüz videosu yok.</p>
                 {% endfor %}
             </div>
         </div>
