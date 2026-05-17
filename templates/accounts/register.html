@@ -3,19 +3,19 @@
 
 {% block extra_style %}
 body { background-color: #121212; color: white; }
-.register-card { background-color: #1a1a1a; border: 1px solid #333; border-radius: 15px; max-width: 520px; margin: 60px auto; }
+.register-card { background-color: #1a1a1a; border: 1px solid #333; border-radius: 15px; max-width: 520px; margin: 20px auto; }
 .form-control, .form-select { background-color: #252525; border: 1px solid #444; color: white; padding: 12px; }
 .form-control:focus, .form-select:focus { background-color: #2d2d2d; border-color: #dc3545; color: white; box-shadow: none; }
 .form-control::placeholder { color: #aaa; }
-label { color: white; }
+label { color: white !important; }
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="register-card p-5 shadow-lg">
+<div class="container py-4">
+    <div class="register-card p-3 p-md-5 shadow-lg">
         <div class="text-center mb-4">
             <h2 class="fw-bold">Aramıza Katıl</h2>
-            <p class="text-muted">Hesap oluştur, yeteneğini sergile</p>
+            <p class="text-muted small">Hesap oluştur, yeteneğini sergile</p>
         </div>
         <form method="POST">
             {% csrf_token %}
@@ -24,7 +24,7 @@ label { color: white; }
                 <label class="form-label fw-semibold">{{ field.label }}</label>
                 {{ field }}
                 {% if field.help_text %}
-                    <div class="form-text" style="color:#aaa;">{{ field.help_text }}</div>
+                    <div class="form-text" style="color:#aaa; font-size:0.8rem;">{{ field.help_text }}</div>
                 {% endif %}
                 {% for error in field.errors %}
                     <div class="text-danger small mt-1">{{ error }}</div>
@@ -34,7 +34,9 @@ label { color: white; }
             <button type="submit" class="btn btn-danger w-100 fw-bold py-3 mt-2">Kayıt Ol</button>
         </form>
         <hr class="border-secondary my-4">
-        <p class="text-center text-muted">Zaten hesabın var mı? <a href="{% url 'login' %}" class="text-danger fw-bold text-decoration-none">Giriş Yap</a></p>
+        <p class="text-center text-muted small">Zaten hesabın var mı?
+            <a href="{% url 'login' %}" class="text-danger fw-bold text-decoration-none">Giriş Yap</a>
+        </p>
     </div>
 </div>
 {% endblock %}
