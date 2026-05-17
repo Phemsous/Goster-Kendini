@@ -5,25 +5,24 @@
 body { background-color: #121212; color: white; }
 .form-control, .form-select { background-color: #252525; border: 1px solid #444; color: white; }
 .form-control:focus { background-color: #2d2d2d; border-color: #dc3545; color: white; box-shadow: none; }
+label { color: white !important; }
 {% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container my-4 my-md-5">
     <div class="row justify-content-center">
-        <div class="col-md-7">
-            <div class="card shadow border-0" style="background:#1a1a1a; border: 1px solid #333 !important;">
-                <div class="card-body p-5">
-                    <h2 class="text-center mb-4 fw-bold text-danger">YENİ İLAN OLUŞTUR</h2>
-                    <p class="text-muted text-center mb-4">Aradığınız yeteneği bulmak için proje detaylarını girin.</p>
-                    <form method="POST">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-danger btn-lg">İlanı Yayınla</button>
-                            <a href="/jobs/" class="btn btn-outline-secondary">Vazgeç</a>
-                        </div>
-                    </form>
-                </div>
+        <div class="col-12 col-md-9 col-lg-7">
+            <div class="card shadow border-0 p-3 p-md-5" style="background:#1a1a1a; border: 1px solid #333 !important;">
+                <h2 class="text-center mb-3 fw-bold text-danger">YENİ İLAN OLUŞTUR</h2>
+                <p class="text-muted text-center mb-4">Aradığınız yeteneği bulmak için proje detaylarını girin.</p>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-danger btn-lg">İlanı Yayınla</button>
+                        <a href="/jobs/" class="btn btn-outline-secondary">Vazgeç</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
